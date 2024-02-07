@@ -1,4 +1,6 @@
 import 'package:bouaouina_s_application2/core/app_export.dart';
+import 'package:bouaouina_s_application2/presentation/AuthenticationService.dart';
+import 'package:bouaouina_s_application2/presentation/welcome_page/welcome_page.dart';
 import 'package:bouaouina_s_application2/widgets/custom_elevated_button.dart';
 import 'package:bouaouina_s_application2/widgets/custom_text_form_field.dart';
 import 'package:flutter/material.dart';
@@ -13,6 +15,7 @@ class SignUpPage extends StatefulWidget {
 
 class SignUpPageState extends State<SignUpPage>
     with AutomaticKeepAliveClientMixin<SignUpPage> {
+  AuthenticationService authService = AuthenticationService();
   TextEditingController emailFieldController = TextEditingController();
   TextEditingController passwordFieldController = TextEditingController();
   TextEditingController nomFieldController = TextEditingController();
@@ -173,6 +176,45 @@ class SignUpPageState extends State<SignUpPage>
     );
   }
 
+  Widget _buildCreateAccountButton(BuildContext context) {
+    return CustomElevatedButton(
+      text: "Créer un compte",
+      margin: EdgeInsets.only(right: 10.h),
+      onPressed: () async {
+        String nom = nomFieldController.text;
+        String prenom = prenomFieldController.text;
+        String dateNaiss = dobFieldController.text;
+        String telephone = phoneFieldController.text;
+        String email = emailFieldController.text;
+        String password = passwordFieldController.text;
+
+        try {
+          // Utilisez l'instance de AuthenticationService pour appeler signUp
+          await authService.signUp(
+            nom,
+            prenom,
+            dateNaiss,
+            telephone,
+            email,
+            password,
+          );
+
+          // Gérez le succès de l'inscription ici, par exemple, naviguez vers une nouvelle page
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+                builder: (context) =>
+                    WelcomePage()), // Remplacez NextPage par la page suivante après l'inscription réussie
+          );
+        } catch (e) {
+          // Gérez les erreurs d'inscription ici
+          print("Erreur d'inscription: $e");
+          // Vous pouvez afficher un message d'erreur à l'utilisateur
+        }
+      },
+    );
+  }
+
   Widget _buildNomField(BuildContext context) {
     return CustomTextFormField(
       controller: nomFieldController,
@@ -270,13 +312,6 @@ class SignUpPageState extends State<SignUpPage>
         top: 18.v,
         bottom: 18.v,
       ),
-    );
-  }
-
-  Widget _buildCreateAccountButton(BuildContext context) {
-    return CustomElevatedButton(
-      text: "Créer un compte",
-      margin: EdgeInsets.only(right: 10.h),
     );
   }
 
